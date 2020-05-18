@@ -99,23 +99,12 @@ router.post('/forgot-password', function(req, res, next){
   })
 });
 
-router.get('/resetpassword', (req, res) => {
-  User.findOne({
-    token: req.query.token
-  }, (err, user) => {
-    if (err){
-      console.error(err)
-    }else{
-      res.status(200).send({
-        username: user.username,
-        message: 'password link is fine'
-      })
-    }
-  })
-})
-
 router.post('/verify-password', function(req, res, next){
-  User.findOne({username:req.body.username}, (err, user) =>{
+  if (req.query.token==='' || req.query.password===''){
+    res.status(400).send('There are parameters missing')
+  }
+
+  User.findOne({token: req.query.token}, (err, user) =>{
     user.token = '';
     user.setPassword(req.body.password);
 
