@@ -3,6 +3,7 @@ var router = require('express').Router();
 var passport = require('passport');
 var User = mongoose.model('User');
 var auth = require('../auth');
+const nodemailer = require('nodemailer');
 
 router.get('/user', auth.required, function(req, res, next){
   User.findById(req.payload.id).then(function(user){
@@ -72,12 +73,56 @@ router.post('/users', function(req, res, next){
   }).catch(next);
 });
 
-router.post('/forgot-password', function(req, res, next){
-  console.log(req.body.email)
-  res.status(200).send('success')
+router.post('/users/forgot-password', function(req, res, next){
+  if (req.body.email === ''){
+    res.status(400).send('Provide email');
+  }
+
+  User.findOne({email: req.body.email}, (err, user) => {
+    if (user === null){
+      res.status(200).send("Email is not attached to an account")
+    }else {
+      
+      const token = user.generateJWT();
+      user.token = token;
+      
+      let transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: `EMAIL_ADDRESS`,
+          pass: `EMAIL_PASSWORD`
+        },
+      });
+      
+      const mailOptions = {
+        from: 'no-reply@example.com',
+        to: `${user.email}`,
+        subject: 'Link to Reset Password',
+        text: `You are receive this because you (or someone else) requested a password reset on your Conduit user account.
+        Please click the following link to complete the process:
+        http://localhost:3000/verify-password/${token}`
+      };
+      
+      // send the email
+      // transporter.sendMail(mailOptions, (err, res) => {
+      //   if (err){
+      //     console.error('there was an error sending email', err)
+      //   }else {
+      //     return res.status(200).json({user: user.toAuthJSON()});
+      //   }
+      // });
+
+      console.log(`http://localhost:3000/verify-password/${token}`)
+      // receive email
+      // console.log(req.body.email)
+
+      return res.status(200).json({user: user.toAuthJSON()});
+
+    }
+  })
 });
 
-router.post('/verify-password', function(req, res, next){
+router.post('/users/verify-password', function(req, res, next){
   console.log(req.body.password)
   res.status(200).send('success')
 });
