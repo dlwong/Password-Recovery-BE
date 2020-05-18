@@ -72,4 +72,14 @@ router.post('/users', function(req, res, next){
   }).catch(next);
 });
 
+router.post('/forgot-password', function(req, res, next){
+  console.log(req.body.email)
+  res.status(200).send('success')
+});
+
+router.post('/verify-password', function(req, res, next){
+  console.log(req.body.password)
+  res.status(200).send('success')
+});
+
 module.exports = router;
