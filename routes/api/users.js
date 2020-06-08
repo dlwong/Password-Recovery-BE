@@ -99,11 +99,11 @@ router.post('/forgot-password', function(req, res, next){
 });
 
 router.post('/verify-password', function(req, res, next){
-  if (req.query.token === '' || req.body.password === ''){
+  if (req.body.token === '' || req.body.password === ''){
     res.status(400).send('There are parameters missing')
   }
   
-  User.findOne({token:req.query.token}, (err, user) =>{
+  User.findOne({token:req.body.token}, (err, user) =>{
     if (err){
       return res.status(401).send("Invalid token")
     }else {
