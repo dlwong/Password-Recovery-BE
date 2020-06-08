@@ -73,7 +73,6 @@ router.post('/users', function(req, res, next){
 });
 
 router.post('/forgot-password', function(req, res, next){
-  
   if (!req.body.email){
     res.status(400).send('Provide email');
   }
@@ -90,7 +89,7 @@ router.post('/forgot-password', function(req, res, next){
           res.status(403).send(err);
           return console.error('Error updating in db');
         }
-        return res.status(200).json({user: user.toAuthJSON()});
+        return res.status(200).send('sent reset password email');
       })
       console.log(`You are receive this because you (or someone else) requested a password reset on your Conduit user account.
         Please click the following link to complete the process:
@@ -100,17 +99,24 @@ router.post('/forgot-password', function(req, res, next){
 });
 
 router.post('/verify-password', function(req, res, next){
-  if (req.query.token==='' || req.query.password===''){
+  if (req.query.token === '' || req.body.password === ''){
     res.status(400).send('There are parameters missing')
   }
+  
+  User.findOne({token:req.query.token}, (err, user) =>{
+    if (err){
+      return res.status(401).send("Invalid token")
+    }else {
+      if (!user){
+        return res.status(200).send("Invalid token")
+      }
+        user.token = '';
+        user.setPassword(req.body.password);
 
-  User.findOne({token: req.query.token}, (err, user) =>{
-    user.token = '';
-    user.setPassword(req.body.password);
-
-    user.save().then(function(){
-      return res.json({user: user.toAuthJSON()});
-    }).catch(next);
+        user.save().then(function(){
+          return res.json({user: user.toAuthJSON()});
+        }).catch(next);
+    }
   })
 });
 
