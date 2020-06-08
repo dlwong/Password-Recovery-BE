@@ -81,8 +81,7 @@ router.post('/forgot-password', function(req, res, next){
     if (user === null){
       res.status(200).send("Email is not attached to an account")
     }else { 
-      const token = user.generateJWT();
-      user.token = token;
+      user.token = user.generateJWT();
 
       user.save(err => {
         if (err){
@@ -105,16 +104,16 @@ router.post('/verify-password', function(req, res, next){
   
   User.findOne({token:req.body.token}, (err, user) =>{
     if (err){
-      return res.status(401).send("Invalid token")
+      return res.status(401).send("Error finding user")
     }else {
       if (!user){
-        return res.status(200).send("Invalid token")
+        return res.status(401).send("Invalid token")
       }
         user.token = '';
         user.setPassword(req.body.password);
 
         user.save().then(function(){
-          return res.json({user: user.toAuthJSON()});
+          return res.status(200).json({user: user.toAuthJSON()});
         }).catch(next);
     }
   })
