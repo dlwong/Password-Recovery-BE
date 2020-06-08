@@ -105,7 +105,7 @@ router.post('/verify-password', function(req, res, next){
   
   User.findOne({token:req.body.token,
     resetPasswordExpires: {
-       $lte: Date.now()
+       $gte: Date.now()
      }
   }, (err, user) =>{
     if (err){
