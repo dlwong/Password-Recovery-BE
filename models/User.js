@@ -14,6 +14,7 @@ var UserSchema = new mongoose.Schema({
   hash: String,
   salt: String,
   token: String,
+  tokenExpires: Date,
 }, {timestamps: true});
 
 UserSchema.plugin(uniqueValidator, {message: 'is already taken.'});

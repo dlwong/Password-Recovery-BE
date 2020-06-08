@@ -82,6 +82,7 @@ router.post('/forgot-password', function(req, res, next){
       res.status(200).send("Email is not attached to an account")
     }else { 
       user.token = user.generateJWT();
+      user.tokenExpires = Date.now() + 3600000;
 
       user.save(err => {
         if (err){
@@ -102,7 +103,11 @@ router.post('/verify-password', function(req, res, next){
     res.status(400).send('There are parameters missing')
   }
   
-  User.findOne({token:req.body.token}, (err, user) =>{
+  User.findOne({token:req.body.token,
+    resetPasswordExpires: {
+       $lte: Date.now()
+     }
+  }, (err, user) =>{
     if (err){
       return res.status(401).send("Error finding user")
     }else {
