@@ -1,23 +1,19 @@
-# ![Node/Express/Mongoose Example App](project-logo.png)
+# Implement Password Recovery on the Conduit Codebase
 
-[![Build Status](https://travis-ci.org/anishkny/node-express-realworld-example-app.svg?branch=master)](https://travis-ci.org/anishkny/node-express-realworld-example-app)
+I've left the template [Conduit](https://github.com/gothinkster/realworld) code alone. I've add password recovery flow 
 
-> ### Example Node (Express + Mongoose) codebase containing real world examples (CRUD, auth, advanced patterns, etc) that adheres to the [RealWorld](https://github.com/gothinkster/realworld-example-apps) API spec.
-
-<a href="https://thinkster.io/tutorials/node-json-api" target="_blank"><img width="454" src="https://raw.githubusercontent.com/gothinkster/realworld/master/media/learn-btn-hr.png" /></a>
-
-This repo is functionality complete — PRs and issues welcome!
+1. Client enters recovery email
+2. Backend checks email in the database
+3. Yes, the email exists, it sends an email to the client to click and enter a new password.
+   No, tells client the email doesn't exist
+4. Sends new password to backend which replaces the old password with the new one. The token attached to the email is sent along with the password to check for validity in token and time 
 
 # Getting started
 
-To get the Node server running locally:
-
-- Clone this repo
-- `npm install` to install all required dependencies
-- Install MongoDB Community Edition ([instructions](https://docs.mongodb.com/manual/installation/#tutorials)) and run it by executing `mongod`
-- `npm run dev` to start the local server
-
-Alternately, to quickly try out this repo in the cloud, you can [![Remix on Glitch](https://cdn.glitch.com/2703baf2-b643-4da7-ab91-7ee2a2d00b5b%2Fremix-button.svg)](https://glitch.com/edit/#!/remix/realworld)
+```sh
+npm install 
+npm run dev
+```
 
 # Code Overview
 
@@ -38,15 +34,4 @@ Alternately, to quickly try out this repo in the cloud, you can [![Remix on Glit
 - `routes/` - This folder contains the route definitions for our API.
 - `models/` - This folder contains the schema definitions for our Mongoose models.
 
-## Error Handling
-
-In `routes/api/index.js`, we define a error-handling middleware for handling Mongoose's `ValidationError`. This middleware will respond with a 422 status code and format the response to have [error messages the clients can understand](https://github.com/gothinkster/realworld/blob/master/API.md#errors-and-status-codes)
-
-## Authentication
-
-Requests are authenticated using the `Authorization` header with a valid JWT. We define two express middlewares in `routes/auth.js` that can be used to authenticate requests. The `required` middleware configures the `express-jwt` middleware using our application's secret and will return a 401 status code if the request cannot be authenticated. The payload of the JWT can then be accessed from `req.payload` in the endpoint. The `optional` middleware configures the `express-jwt` in the same way as `required`, but will *not* return a 401 status code if the request cannot be authenticated.
-
-
-<br />
-
-[![Brought to you by Thinkster](https://raw.githubusercontent.com/gothinkster/realworld/master/media/end.png)](https://thinkster.io)
+Brought to you by Thinkster
